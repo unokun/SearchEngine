@@ -13,23 +13,39 @@ public class LFSScanner implements Scanner {
 		listenerList.add(lisnter);
 	}
 
+	
+	@Override
+	public void removeScanEventListener(ScanEventListener listener) {
+		listenerList.remove(listener);
+	}
+
+
 	@Override
 	public void scan(String path) {
-		
+		scan(new File(path));
 
 	}
 
+	/**
+	 * ファイルをスキャンします。
+	 * 
+	 * @param path スキャンするディレクトリ
+	 * 
+	 */
 	@Override
 	public void scan(File path) {
 		File[] files = path.listFiles();
 		for (File file: files) {
 			if (file.isDirectory()) {
 				scan(file);
-				return;
+//				return;
 			}
-			
+			if (file.isFile()) {
+				System.out.println(file.getAbsolutePath());
+				for (ScanEventListener listener : listenerList) {
+					listener.found(file);
+				}
+			}
 		}
 	}
-	
-	
 }
