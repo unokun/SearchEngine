@@ -19,6 +19,7 @@ public class LFSScanner implements Scanner {
 		listenerList.remove(listener);
 	}
 
+	
 
 	@Override
 	public void scan(String path) {
@@ -38,14 +39,18 @@ public class LFSScanner implements Scanner {
 		for (File file: files) {
 			if (file.isDirectory()) {
 				scan(file);
-//				return;
 			}
 			if (file.isFile()) {
-				System.out.println(file.getAbsolutePath());
 				for (ScanEventListener listener : listenerList) {
 					listener.found(file);
 				}
 			}
 		}
+	}
+
+
+	@Override
+	public int countEventListener() {
+		return this.listenerList.size();
 	}
 }
