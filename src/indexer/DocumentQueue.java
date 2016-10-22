@@ -14,8 +14,20 @@ public class DocumentQueue implements ScanEventListener {
 		queue.add(file.getAbsolutePath());
 		
 	}
+	/**
+	 * キューに含まれているドキュメントパスの数を取得します
+	 * @return
+	 */
+	int countQueue() {
+		return queue.size();
+	}
 	
-	public String pull() {
+	/**
+	 * 先頭のデータを取得します
+	 * 
+	 * @return
+	 */
+	public String poll() {
 		return queue.poll();
 	}
 }

@@ -16,36 +16,27 @@ import org.junit.Test;
 
 public class LFSScannerTest implements ScanEventListener {
 
+	private static final String TMP_DIR = "tmp";
 	Scanner scanner;
 	List<File> fileList;
-	File tmpDir = new File("tmp");
 	Set<String> testFileSet;
 
+	TestFiles testFiles;
+	
 	@Before
 	public void setUp() throws Exception {
 		scanner = new LFSScanner();
 		fileList = new ArrayList<>();
-
-		tmpDir.mkdir();
 		testFileSet = new HashSet<>();
+		
+		testFiles = new TestFiles(TMP_DIR);
 
 	}
 
-	void deleteDir(File dir) {
-		File[] files = dir.listFiles();
-		for (File file: files) {
-			if (file.isDirectory()) {
-				deleteDir(file);
-			}
-			if (file.isFile()) {
-				file.delete();
-			}
-		}	
-	}
 	@After
 	public void tearDown() throws Exception {
 		try {
-			deleteDir(tmpDir);
+			testFiles.cleanUp();
 		} catch (Exception e) {
 			fail();
 		}
@@ -54,12 +45,12 @@ public class LFSScannerTest implements ScanEventListener {
 	@Test
 	public void testEventListener() {
 		try {
-			assertSame(0, scanner.countEventListener());
+			assertEquals(0, scanner.countEventListener());
 			scanner.addScanEventListener(this);
-			assertSame(1, scanner.countEventListener());
+			assertEquals(1, scanner.countEventListener());
 			
 			scanner.removeScanEventListener(this);
-			assertSame(0, scanner.countEventListener());
+			assertEquals(0, scanner.countEventListener());
 			
 		} catch (Exception e) {
 			fail();
@@ -72,16 +63,16 @@ public class LFSScannerTest implements ScanEventListener {
 	public void testScan0() {
 		try {
 			
-			assertSame(0, scanner.countEventListener());
+			assertEquals(0, scanner.countEventListener());
 			scanner.addScanEventListener(this);
-			assertSame(1, scanner.countEventListener());
+			assertEquals(1, scanner.countEventListener());
 			
-			scanner.scan(tmpDir);
+			scanner.scan(TMP_DIR);
 			scanner.removeScanEventListener(this);
-			assertSame(0, scanner.countEventListener());
+			assertEquals(0, scanner.countEventListener());
 			
 			// 作成したテストファイルがスキャンされていることを確認する
-			assertSame(0, fileList.size());
+			assertEquals(0, fileList.size());
 		} catch (Exception e) {
 			fail();
 		}
@@ -93,13 +84,13 @@ public class LFSScannerTest implements ScanEventListener {
 	public void testScan1() {
 		try {
 			// テストファイルを作成する
-			testFileSet = createTextFileSet(tmpDir, 1);
+			testFileSet = createTextFileSet(TMP_DIR, 1);
 			
 			scanner.addScanEventListener(this);
-			scanner.scan(tmpDir);
+			scanner.scan(TMP_DIR);
 			
 			// 作成したテストファイルがスキャンされていることを確認する
-			assertSame(1, fileList.size());
+			assertEquals(1, fileList.size());
 			assertTrue(testFileSet.contains(fileList.get(0).getAbsolutePath()));
 		} catch (Exception e) {
 			fail();
@@ -113,13 +104,13 @@ public class LFSScannerTest implements ScanEventListener {
 	public void testScan2() {
 		try {
 			// テストファイルを作成する
-			testFileSet = createTextFileSet(tmpDir, 1);
+			testFileSet = createTextFileSet(TMP_DIR, 1);
 			
 			scanner.addScanEventListener(this);
-			scanner.scan(tmpDir.getName());
+			scanner.scan(TMP_DIR);
 			
 			// 作成したテストファイルがスキャンされていることを確認する
-			assertSame(1, fileList.size());
+			assertEquals(1, fileList.size());
 			assertTrue(testFileSet.contains(fileList.get(0).getAbsolutePath()));
 		} catch (Exception e) {
 			fail();
@@ -135,15 +126,15 @@ public class LFSScannerTest implements ScanEventListener {
 	public void testScan10() {
 		try {
 			// テストファイルを作成する
-			File subdir = new File(tmpDir.getName() + File.separator + "tmp1");
+			File subdir = new File(TMP_DIR + File.separator + "tmp1");
 			subdir.mkdir();
-			testFileSet = createTextFileSet(subdir, 1);
+			testFileSet = createTextFileSet(subdir.getAbsolutePath(), 1);
 			
 			scanner.addScanEventListener(this);
-			scanner.scan(tmpDir);
+			scanner.scan(TMP_DIR);
 			
 			// 作成したテストファイルがスキャンされていることを確認する
-			assertSame(1, fileList.size());
+			assertEquals(1, fileList.size());
 			assertTrue(testFileSet.contains(fileList.get(0).getAbsolutePath()));
 		} catch (Exception e) {
 			fail();
@@ -158,7 +149,7 @@ public class LFSScannerTest implements ScanEventListener {
 	 * @return
 	 * @throws IOException
 	 */
-	Set<String> createTextFileSet(File parentDir, int n) throws IOException {
+	Set<String> createTextFileSet(String parentDir, int n) throws IOException {
 		Set<String> testFileSet = new HashSet<>();
 
 		for (int i = 0; i < n; i++) {
