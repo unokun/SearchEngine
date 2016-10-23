@@ -1,42 +1,20 @@
 package indexer;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
-public class LFSScanner implements Scanner {
-
-	private List<ScanEventListener> listenerList = new ArrayList<>();
-	
-	@Override
-	public void addScanEventListener(ScanEventListener lisnter) {
-		listenerList.add(lisnter);
-	}
-
-	
-	@Override
-	public void removeScanEventListener(ScanEventListener listener) {
-		listenerList.remove(listener);
-	}
-
-	
-
-	@Override
-	public void scan(String path) {
-		scan(new File(path));
-
-	}
+public class LFSScanner extends AbstractDocScanner {
 
 	/**
 	 * ファイルをスキャンします。
 	 * 
-	 * @param path スキャンするディレクトリ
+	 * @param path
+	 *            スキャンするディレクトリ
 	 * 
 	 */
 	@Override
 	public void scan(File path) {
 		File[] files = path.listFiles();
-		for (File file: files) {
+		for (File file : files) {
 			if (file.isDirectory()) {
 				scan(file);
 			}
@@ -48,9 +26,4 @@ public class LFSScanner implements Scanner {
 		}
 	}
 
-
-	@Override
-	public int countEventListener() {
-		return this.listenerList.size();
-	}
 }
