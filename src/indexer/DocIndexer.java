@@ -10,7 +10,15 @@ import org.atilika.kuromoji.Token;
 
 public class DocIndexer implements Runnable {
 	// ドキュメントキュー
-	DocumentQueue queue;
+	private DocumentQueue queue;
+	
+	public DocumentQueue getQueue() {
+		return queue;
+	}
+	public void setQueue(DocumentQueue queue) {
+		this.queue = queue;
+	}
+
 	// 形態素解析エンジン
 	JapaneseTokenizer tokenizer = new JapaneseTokenizer();
 
@@ -33,14 +41,17 @@ public class DocIndexer implements Runnable {
 	 * @throws IOException
 	 */
 	void process() throws IOException {
+		// キューからパスを取得します
 		String path = queue.poll();
 		if (path == null) {
 			return;
 		}
+		// 文書が存在するかどうか?
 		File doc = new File(path);
 		if (!doc.exists()) {
 			return;
 		}
+		// 文書を処理します
 		processDoc(doc);
 	}
 
@@ -52,9 +63,10 @@ public class DocIndexer implements Runnable {
 	 * @throws IOException
 	 */
 	void processDoc(File doc) throws FileNotFoundException, IOException {
-		System.out.println("processDoc");
+		//テキストを抽出する
 		String text = getText(doc);
-		System.out.println("processDoc: " + text);
+		
+		// 形態素解析を実行する
 		List<Token> tokenList = tokenizer.parse(text);
 		for (Token token : tokenList) {
 			storeToken(token);
@@ -66,6 +78,7 @@ public class DocIndexer implements Runnable {
 
 	}
 
+	// DBに書き込む
 	void storeToken(Token token) {
 
 	}

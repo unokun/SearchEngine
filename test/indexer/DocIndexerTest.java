@@ -15,6 +15,13 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 
+/**
+ * Mockito 初めの一歩 - Qiita 
+ * http://qiita.com/mstssk/items/98e597c13f12746c907d
+ * 
+ * @author unokun
+ *
+ */
 public class DocIndexerTest {
 //	@Mock
 	DocIndexer docIndexer;
