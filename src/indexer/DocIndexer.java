@@ -52,7 +52,9 @@ public class DocIndexer implements Runnable {
 	 * @throws IOException
 	 */
 	void processDoc(File doc) throws FileNotFoundException, IOException {
+		System.out.println("processDoc");
 		String text = getText(doc);
+		System.out.println("processDoc: " + text);
 		List<Token> tokenList = tokenizer.parse(text);
 		for (Token token : tokenList) {
 			storeToken(token);

@@ -1,25 +1,28 @@
 package indexer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import org.atilika.kuromoji.Token;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import mockit.*;
-import mockit.internal.expectations.TestOnlyPhase;
+import static org.junit.Assert.*;
+import org.mockito.*;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
+import static org.mockito.Mockito.*;
+import org.mockito.MockitoAnnotations;
 
 public class DocIndexerTest {
-	@Mocked
+//	@Mock
 	DocIndexer docIndexer;
 	
 	@Before
 	public void setUp() throws Exception {
+//		MockitoAnnotations.initMocks(this);
+		
 	}
 
 	@After
@@ -27,26 +30,21 @@ public class DocIndexerTest {
 	}
 
 	@Test
-	public void test() {
+	public void testProcessDocTokenizer() {
 
 		try {
-			new Expectations() {
-				{
-				docIndexer.getText((File)any);
-				result = "東京特許許可局";
-//				docIndexer.storeToken((Token)any);
-//				times = 4;
+//			docIndexer = mock(DocIndexer.class);
+			docIndexer = spy(new DocIndexer());
+			File file = new File("");
 
-				}
-//				{
-//					docIndexer.storeToken((Token)any);
-//					times = 4;
-//				}
-			};
+			doReturn("東京特許許可局").when(docIndexer).getText(ArgumentMatchers.any(File.class));
+			doNothing().when(docIndexer).storeDocument(ArgumentMatchers.any(File.class));
+			doNothing().when(docIndexer).storeToken(ArgumentMatchers.any(Token.class));
 
-//			System.out.println(docIndexer.getText(new File("")));
-//	        docIndexer.processDoc(new File(""));
-			assertEquals("東京特許許可局", docIndexer.getText(new File("")));
+	        docIndexer.processDoc(file);
+//			assertEquals("東京特許許可局", docIndexer.getText(new File("")));
+	        verify(docIndexer, times(1)).storeDocument(ArgumentMatchers.any(File.class));
+	        verify(docIndexer, times(4)).storeToken(ArgumentMatchers.any(Token.class));
 		} catch (Exception e) {
 			fail();
 			
