@@ -16,7 +16,11 @@ public class Storage {
 
 	DocStore docStore;
 	TermStore termStore;
+	TermDocStore termDocStore;
 	
+	public TermDocStore getTermDocStore() {
+		return termDocStore;
+	}
 	public DocStore getDocStore() {
 		return docStore;
 	}
@@ -28,11 +32,15 @@ public class Storage {
 	}
 	public void init(String dbName, boolean drop) throws SQLException {
 		db = new SQLite(dbName, drop);
+		Connection conn = getConnection();
 		docStore = new DocStore();
-		docStore.createTable(getConnection());
+		docStore.createTable(conn);
 
 		termStore = new TermStore();
-		termStore.createTable(getConnection());
+		termStore.createTable(conn);
+		
+		termDocStore = new TermDocStore();
+		termDocStore.createTable(conn);
 	}
 
 	void dropDatabase() throws SQLException {
@@ -48,12 +56,12 @@ public class Storage {
 		return db.getConnection();
 	}
 
-	public void storeDocument(File file) throws SQLException {
+	public void storeDocument(Document doc) throws SQLException {
 		
-		docStore.insert(getConnection(), createDocument(file));
+		docStore.insert(getConnection(), doc);
 	}
 	
-	Document createDocument(File file) {
+	public Document createDocument(File file) {
 		Document doc = new Document();
 		doc.setId(getId());
 		doc.setTitle(getTitle(file.getName()));
@@ -61,11 +69,12 @@ public class Storage {
 	}
 
 	// DBに書き込む
-	public void storeToken(Token token) throws SQLException {
-		termStore.insert(getConnection(), createTerm(token));
+	public void storeTerm(Term term, Document doc) throws SQLException {
+		termStore.insert(getConnection(), term);
+		termDocStore.insert(getConnection(), term, doc);
 	}
 	
-	Term createTerm(Token token) {
+	public Term createTerm(Token token) {
 		Term term = new Term();
 		term.setId(getId());
 		term.setSurface(token.getSurfaceForm());

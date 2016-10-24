@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.atilika.kuromoji.Token;
 
+import model.Document;
+import model.Term;
 import store.Storage;
 
 public class DocIndexer implements Runnable {
@@ -75,29 +77,31 @@ public class DocIndexer implements Runnable {
 	/**
 	 * 文書の処理を実行します
 	 * 
-	 * @param doc
+	 * @param file
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws SQLException 
 	 */
-	void processDoc(File doc) throws FileNotFoundException, IOException, SQLException {
+	void processDoc(File file) throws FileNotFoundException, IOException, SQLException {
 		//テキストを抽出する
-		String text = getText(doc);
+		String text = getText(file);
 		
+		Document doc = storage.createDocument(file);
 		// 形態素解析を実行する
 		List<Token> tokenList = tokenizer.parse(text);
 		for (Token token : tokenList) {
-			storeToken(token);
+			Term term = storage.createTerm(token);
+			storeTerm(term, doc);
 		}
 		storeDocument(doc);
 	}
-	public void storeDocument(File doc) throws SQLException {
+	public void storeDocument(Document doc) throws SQLException {
 		storage.storeDocument(doc);
 	}
 
 	// DBに書き込む
-	public void storeToken(Token token) throws SQLException {
-		storage.storeToken(token);
+	public void storeTerm(Term term, Document doc) throws SQLException {
+		storage.storeTerm(term, doc);
 
 	}
 

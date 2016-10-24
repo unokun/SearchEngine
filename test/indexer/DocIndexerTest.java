@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 
+import model.Document;
+import model.Term;
 import store.Storage;
 
 /**
@@ -41,19 +43,25 @@ public class DocIndexerTest {
 	public void testProcessDocTokenizer() {
 
 		try {
+			Storage storage = Indexer.getStorage();
+			storage.init("test", true);
+
 //			docIndexer = mock(DocIndexer.class);
 			docIndexer = spy(new DocIndexer());
+			docIndexer.setStorage(storage);
+
 			File file = new File("");
 
 			doReturn("東京特許許可局").when(docIndexer).getText(ArgumentMatchers.any(File.class));
-			doNothing().when(docIndexer).storeDocument(ArgumentMatchers.any(File.class));
-			doNothing().when(docIndexer).storeToken(ArgumentMatchers.any(Token.class));
+			doNothing().when(docIndexer).storeDocument(ArgumentMatchers.any(Document.class));
+			doNothing().when(docIndexer).storeTerm(ArgumentMatchers.any(Term.class), ArgumentMatchers.any(Document.class));
 
 	        docIndexer.processDoc(file);
 //			assertEquals("東京特許許可局", docIndexer.getText(new File("")));
-	        verify(docIndexer, times(1)).storeDocument(ArgumentMatchers.any(File.class));
-	        verify(docIndexer, times(4)).storeToken(ArgumentMatchers.any(Token.class));
+	        verify(docIndexer, times(1)).storeDocument(ArgumentMatchers.any(Document.class));
+	        verify(docIndexer, times(4)).storeTerm(ArgumentMatchers.any(Term.class), ArgumentMatchers.any(Document.class));
 		} catch (Exception e) {
+			e.printStackTrace();
 			fail();
 			
 		}
@@ -76,6 +84,7 @@ public class DocIndexerTest {
 			
 			assertEquals(1, storage.getDocStore().count(conn));
 			assertEquals(4, storage.getTermStore().count(conn));
+			assertEquals(4, storage.getTermDocStore().count(conn));
 
 
 		} catch (Exception e) {

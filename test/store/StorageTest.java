@@ -66,7 +66,8 @@ public class StorageTest {
 			
 			// Documentの登録
 			File file = new File("abc.txt");
-			storage.storeDocument(file);
+			Document doc = storage.createDocument(file);
+			storage.storeDocument(doc);
 			assertEquals(storage.docStore.count(conn), 1);
 			
 			// タームの登録

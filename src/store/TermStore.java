@@ -62,13 +62,13 @@ public class TermStore extends AbstractStore {
 				   .append("'");
 			ResultSet rs = statement.executeQuery(builder.toString());
 			if (rs.next()) {
-				doc =  createDoc(rs);
+				doc =  createTerm(rs);
 			}
 			rs.close();
 			return doc;
 		}
 	}
-	Term createDoc(ResultSet rs) throws SQLException {
+	Term createTerm(ResultSet rs) throws SQLException {
 		Term term = new Term();
 		term.setId(rs.getString(COLUMN_ID));
 		term.setSurface(rs.getString(COLUMN_SURFACE));
