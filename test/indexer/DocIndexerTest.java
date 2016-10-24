@@ -1,8 +1,7 @@
 package indexer;
 
-import static org.junit.Assert.fail;
-
 import java.io.File;
+import java.sql.Connection;
 
 import org.atilika.kuromoji.Token;
 import org.junit.After;
@@ -14,6 +13,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
+
+import store.Storage;
 
 /**
  * Mockito 初めの一歩 - Qiita 
@@ -57,5 +58,28 @@ public class DocIndexerTest {
 			
 		}
 	}
+	@Test
+	public void testProcessDoc() {
+		try {
 
+			Storage storage = Indexer.getStorage();
+			storage.init("test", true);
+			Connection conn = storage.getConnection();
+
+			docIndexer = spy(new DocIndexer());
+			docIndexer.setStorage(storage);
+			
+			doReturn("東京特許許可局").when(docIndexer).getText(ArgumentMatchers.any(File.class));
+
+			File file = new File("");
+			docIndexer.processDoc(file);
+			
+			assertEquals(1, storage.getDocStore().count(conn));
+			assertEquals(4, storage.getTermStore().count(conn));
+
+
+		} catch (Exception e) {
+			fail();
+		}
+	}
 }

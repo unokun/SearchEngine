@@ -4,14 +4,26 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.atilika.kuromoji.Token;
 
+import store.Storage;
+
 public class DocIndexer implements Runnable {
 	// ドキュメントキュー
 	private DocumentQueue queue;
+
+	// ストレージ
+	private Storage storage;
 	
+	public Storage getStorage() {
+		return storage;
+	}
+	public void setStorage(Storage storage) {
+		this.storage = storage;
+	}
 	public DocumentQueue getQueue() {
 		return queue;
 	}
@@ -31,6 +43,10 @@ public class DocIndexer implements Runnable {
 				// FIXME
 				e.printStackTrace();
 			} catch (IOException e) {
+				// FIXME
+
+			} catch (SQLException e) {
+				// FIXME
 
 			}
 		}
@@ -39,8 +55,9 @@ public class DocIndexer implements Runnable {
 	 * 処理を実行します
 	 * 
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
-	void process() throws IOException {
+	void process() throws IOException, SQLException {
 		// キューからパスを取得します
 		String path = queue.poll();
 		if (path == null) {
@@ -61,8 +78,9 @@ public class DocIndexer implements Runnable {
 	 * @param doc
 	 * @throws FileNotFoundException
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
-	void processDoc(File doc) throws FileNotFoundException, IOException {
+	void processDoc(File doc) throws FileNotFoundException, IOException, SQLException {
 		//テキストを抽出する
 		String text = getText(doc);
 		
@@ -73,15 +91,17 @@ public class DocIndexer implements Runnable {
 		}
 		storeDocument(doc);
 	}
-
-	void storeDocument(File doc) {
-
+	public void storeDocument(File doc) throws SQLException {
+		storage.storeDocument(doc);
 	}
 
 	// DBに書き込む
-	void storeToken(Token token) {
+	public void storeToken(Token token) throws SQLException {
+		storage.storeToken(token);
 
 	}
+
+
 
 	/**
 	 * ドキュメントのテキストを取得します
