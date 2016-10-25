@@ -72,6 +72,9 @@ public class LFSScannerTest implements ScanEventListener {
 			assertEquals(0, scanner.countEventListener());
 			
 			// 作成したテストファイルがスキャンされていることを確認する
+			for (File file : fileList) {
+				System.out.println(file);
+			}
 			assertEquals(0, fileList.size());
 		} catch (Exception e) {
 			fail();
