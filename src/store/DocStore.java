@@ -37,7 +37,7 @@ public class DocStore extends AbstractStore {
 				   .append(doc.getContent())
 				   .append("'") ;
 			builder.append(")");
-			System.out.println(builder.toString());
+//			System.out.println(builder.toString());
 
 			statement.executeUpdate(builder.toString());
 		}
