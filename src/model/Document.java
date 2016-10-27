@@ -4,7 +4,14 @@ public class Document {
 	String id;
 	String title;
 	String content;
+	String path;
 	
+	public String getPath() {
+		return path;
+	}
+	public void setPath(String path) {
+		this.path = path;
+	}
 	public String getId() {
 		return id;
 	}

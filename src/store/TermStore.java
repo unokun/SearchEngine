@@ -51,7 +51,7 @@ public class TermStore extends AbstractStore {
 		return (term != null);
 	}
 	
-	Term find(Connection conn, String id) throws SQLException {
+	public Term find(Connection conn, String id) throws SQLException {
 		try(Statement statement = conn.createStatement()) {
 			Term doc = null;
 			StringBuilder builder = new StringBuilder();
@@ -59,6 +59,23 @@ public class TermStore extends AbstractStore {
 				   .append(TABLE_TERM)
 				   .append(" where id = '")
 				   .append(id)
+				   .append("'");
+			ResultSet rs = statement.executeQuery(builder.toString());
+			if (rs.next()) {
+				doc =  createTerm(rs);
+			}
+			rs.close();
+			return doc;
+		}
+	}
+	public Term findBySurface(Connection conn, String surface) throws SQLException {
+		try(Statement statement = conn.createStatement()) {
+			Term doc = null;
+			StringBuilder builder = new StringBuilder();
+			builder.append("select id, surface, reading from ")
+				   .append(TABLE_TERM)
+				   .append(" where surface = '")
+				   .append(surface)
 				   .append("'");
 			ResultSet rs = statement.executeQuery(builder.toString());
 			if (rs.next()) {

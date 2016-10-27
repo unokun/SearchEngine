@@ -55,6 +55,21 @@ public class DocStore extends AbstractStore {
 			return doc;
 		}
 	}
+	
+	/**
+	 * 文書数
+	 */
+	public int count(Connection conn) throws SQLException {
+		try(Statement statement = conn.createStatement()) {
+			int count = 0;
+			ResultSet rs = statement.executeQuery("select count(*) from " + TABLE_DOC);
+			if (rs.next()) {
+				count =  rs.getInt(1);
+			}
+			rs.close();
+			return count;
+		}
+	}
 	Document createDoc(ResultSet rs) throws SQLException {
 		Document doc = new Document();
 		doc.setId(rs.getString(COLUMN_ID));
